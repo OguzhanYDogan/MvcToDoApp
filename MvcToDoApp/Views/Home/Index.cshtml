@@ -1,0 +1,70 @@
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "To-Do List";
+}
+
+<div class="row">
+    <div class="col col-md-9 col-lg-6">
+        <h1>@ViewBag.Title</h1>
+
+        <form asp-action="Index" class="mb-3">
+            <div class="input-group">
+                <input class="form-control" asp-for="Title" type="text" placeholder="Enter a task" />
+                <button class="btn btn-outline-dark">ADD</button>
+            </div>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </form>
+        <form asp-action="Update">
+            <ul class="list-group list-group-flush">
+                @foreach (TodoItem todo in Model.TodoItems)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <div>
+                            <label class="form-check-label @(todo.Done ? "text-decoration-line-through" : "")">
+                                <input class="form-check-input me-1" type="checkbox" name="dones" value="@todo.Id" @(todo.Done ? "checked" : "")>
+                                @todo.Title
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-item-id="@todo.Id">Delete</button>
+                    </li>
+                }
+            </ul>
+            <button class="btn btn-success">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" id="hdnId" name="id" value="" />
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure that you want to delete the item?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+
+        deleteModal.addEventListener('show.bs.modal', event => {
+            // Button that triggered the modal
+            const button = event.relatedTarget;
+            // Extract id from the button
+            const id = button.getAttribute('data-item-id')
+           
+            // Update the modal's id.
+            document.getElementById("hdnId").value = id;
+        })
+    </script>
+}
